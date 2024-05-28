@@ -1,4 +1,4 @@
-BIN_OUTPUT_PATH = bin/$(shell uname -s)-$(shell uname -m)
+export BIN_OUTPUT_PATH = bin/$(shell uname -s)-$(shell uname -m)
 TOOL_BIN = bin/gotools/$(shell uname -s)-$(shell uname -m)
 UNAME_S ?= $(shell uname -s)
 UNAME_M ?= $(shell uname -m)
