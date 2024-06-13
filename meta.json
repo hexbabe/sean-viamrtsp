@@ -1,6 +1,6 @@
 {
   "module_id": "seanorg:seanviamrtsp",
-  "visibility": "private",
+  "visibility": "public",
   "url": "https://github.com/hexbabe/sean-viamrtsp",
   "description": "module for rtsp, currently supports x264 and x265",
   "models": [
