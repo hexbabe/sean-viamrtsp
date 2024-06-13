@@ -24,7 +24,7 @@
   "build": {
     "build": "bash build.sh",
     "path": "module.tar.gz",
-    "arch" : ["linux/amd64", "linux/arm64"]
+    "arch" : ["linux/amd64", "linux/arm64", "android/arm64"]
   },
   "entrypoint": "bin/viamrtsp"
 }
