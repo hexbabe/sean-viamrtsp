@@ -19,6 +19,13 @@ require (
 )
 
 require (
+	github.com/beevik/etree v1.1.0 // indirect
+	github.com/elgs/gostrgen v0.0.0-20161222160715-9d61ae07eeae // indirect
+	github.com/gofrs/uuid v4.2.0+incompatible // indirect
+	github.com/juju/errors v0.0.0-20220331221717-b38fca44723b // indirect
+)
+
+require (
 	4d63.com/gocheckcompilerdirectives v1.2.1 // indirect
 	4d63.com/gochecknoglobals v0.2.1 // indirect
 	cloud.google.com/go v0.110.10 // indirect
@@ -268,6 +275,7 @@ require (
 	github.com/tommy-muehle/go-mnd/v2 v2.5.1 // indirect
 	github.com/ultraware/funlen v0.1.0 // indirect
 	github.com/ultraware/whitespace v0.1.0 // indirect
+	github.com/use-go/onvif v0.0.9
 	github.com/uudashr/gocognit v1.1.2 // indirect
 	github.com/viamrobotics/webrtc/v3 v3.99.10 // indirect
 	github.com/wlynxg/anet v0.0.3 // indirect

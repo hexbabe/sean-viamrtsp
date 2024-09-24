@@ -22,6 +22,7 @@ import (
 	"github.com/pion/rtp"
 	"github.com/pkg/errors"
 	"github.com/viam-modules/viamrtsp/formatprocessor"
+	"github.com/viam-modules/viamrtsp/viamonvif"
 	"go.viam.com/rdk/components/camera"
 	"go.viam.com/rdk/components/camera/rtppassthrough"
 	"go.viam.com/rdk/gostream"
@@ -106,7 +107,8 @@ type rtspCamera struct {
 
 	client     *gortsplib.Client
 	rawDecoder *decoder
-	discoverer *RTSPDiscovery
+	discoverer *viamonvif.RTSPDiscovery
+	encoder    *viamonvif.Encoder
 
 	cancelCtx  context.Context
 	cancelFunc context.CancelFunc
@@ -178,12 +180,17 @@ func (rc *rtspCamera) clientReconnectBackgroundWorker(codecInfo videoCodec) {
 				}
 			}
 
-			// TODO(hexbabe): Delete when discovery API is available.
-			addresses, err := rc.discoverer.discoverRTSPAddresses()
+			// // TODO(hexbabe): Delete when discovery API is available.
+			// addresses, err := rc.discoverer.DiscoverRTSPAddresses()
+			// if err != nil {
+			// 	rc.logger.Errorf("RTSP address discovery error: %s", err)
+			// }
+			// rc.logger.Infof("Discovered addresses: %v\n", addresses)
+
+			err := rc.encoder.SetResolution(960, 1080)
 			if err != nil {
-				rc.logger.Errorf("RTSP address discovery error: %s", err)
+				rc.logger.Errorf("Error setting resolution: %s", err)
 			}
-			rc.logger.Infof("Discovered addresses: %v\n", addresses)
 		}
 	}, rc.activeBackgroundWorkers.Done)
 }
@@ -664,7 +671,8 @@ func newRTSPCamera(ctx context.Context, _ resource.Dependencies, conf resource.C
 		bufAndCBByID:                make(map[rtppassthrough.SubscriptionID]bufAndCB),
 		rtpPassthroughCtx:           rtpPassthroughCtx,
 		rtpPassthroughCancelCauseFn: rtpPassthroughCancelCauseFn,
-		discoverer:                  newRTSPDiscovery(logger),
+		discoverer:                  viamonvif.NewRTSPDiscovery(logger),
+		encoder:					 viamonvif.NewEncoder(newConf.Address, logger),
 		avFramePool:                 framePool,
 		logger:                      logger,
 	}
