@@ -140,6 +140,7 @@ gofmt:
 	gofmt -w -s .
 
 lint: gofmt tool-install build-ffmpeg
+	go get go.viam.com/rdk@latest
 	go mod tidy
 	CGO_CFLAGS=$(CGO_CFLAGS) GOFLAGS=$(GOFLAGS) $(TOOL_BIN)/golangci-lint run -v --fix --config=./etc/.golangci.yaml --timeout=2m
 
