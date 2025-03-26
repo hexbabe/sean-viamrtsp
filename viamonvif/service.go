@@ -149,7 +149,14 @@ func createCamerasFromURLs(l CameraInfo, discoveryDependencyName string, logger 
 			discDep = discoveryDependencyName
 		}
 
-		cfg, err := createCameraConfig(l.Name(index), u, discDep)
+		// Get the media profile for this URL if available
+		var mediaProfile string
+		if index < len(l.MediaProfiles) {
+			// Convert profile to string format
+			mediaProfile = fmt.Sprintf("%s", l.MediaProfiles[index].Token)
+		}
+
+		cfg, err := createCameraConfig(l.Name(index), u, discDep, mediaProfile)
 		if err != nil {
 			return nil, err
 		}
@@ -158,13 +165,14 @@ func createCamerasFromURLs(l CameraInfo, discoveryDependencyName string, logger 
 	return cams, nil
 }
 
-func createCameraConfig(name, address, discoveryDependency string) (resource.Config, error) {
+func createCameraConfig(name, address, discoveryDependency, mediaProfile string) (resource.Config, error) {
 	// using the camera's Config struct in case a breaking change occurs
 	_true := true
 	attributes := viamrtsp.Config{
 		Address:        address,
 		RTPPassthrough: &_true,
 		DiscoveryDep:   discoveryDependency,
+		MediaProfile:   mediaProfile,
 	}
 	var result map[string]interface{}
 

@@ -102,6 +102,7 @@ type Config struct {
 	Query        viamupnp.DeviceQuery `json:"query,omitempty"`
 	VideoStore   *videoStoreConfig    `json:"video_store,omitempty"`
 	DiscoveryDep string               `json:"discovery_dep,omitempty"`
+	MediaProfile string               `json:"media_profile,omitempty"`
 }
 
 // CodecFormat contains a pointer to a format and the corresponding FFmpeg codec.

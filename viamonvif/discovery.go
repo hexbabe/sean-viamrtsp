@@ -110,6 +110,7 @@ type CameraInfo struct {
 	SerialNumber    string   `json:"serial_number"`
 	FirmwareVersion string   `json:"firmware_version"`
 	HardwareID      string   `json:"hardware_id"`
+	MediaProfiles   []onvif.Profile `json:"media_profiles"`
 
 	deviceIP net.IP
 	mdnsName string
@@ -253,7 +254,7 @@ func GetCameraInfo(
 	logger.Debugf("ip: %s GetCapabilities: DeviceInfo: %#v", xaddr, dev)
 
 	// Call the ONVIF Media service to get the available media profiles using the same device instance
-	rtspURLs, err := GetRTSPStreamURIsFromProfiles(ctx, dev, creds, logger)
+	rtspURLs, profiles, err := GetRTSPStreamURIsFromProfiles(ctx, dev, creds, logger)
 	if err != nil {
 		return zero, fmt.Errorf("failed to get RTSP URLs: %w", err)
 	}
@@ -266,6 +267,7 @@ func GetCameraInfo(
 		SerialNumber:    resp.SerialNumber,
 		FirmwareVersion: resp.FirmwareVersion,
 		HardwareID:      resp.HardwareID,
+		MediaProfiles:   profiles,
 
 		// Will be nil if there's an error.
 		deviceIP: net.ParseIP(xaddr.Host),
@@ -280,10 +282,10 @@ func GetRTSPStreamURIsFromProfiles(
 	dev OnvifDevice,
 	creds device.Credentials,
 	logger logging.Logger,
-) ([]string, error) {
+) ([]string, []onvif.Profile, error) {
 	resp, err := dev.GetProfiles(ctx)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Resultant slice of RTSP URIs
@@ -300,5 +302,5 @@ func GetRTSPStreamURIsFromProfiles(
 		rtspUris = append(rtspUris, uri.String())
 	}
 
-	return rtspUris, nil
+	return rtspUris, resp.Profiles, nil
 }
