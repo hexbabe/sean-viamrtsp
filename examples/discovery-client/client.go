@@ -13,13 +13,13 @@ func main() {
 	logger := logging.NewDebugLogger("client")
 	machine, err := client.New(
 		context.Background(),
-		"<machine-address>", // replace with your machine address, api key etc.
+		"rawr-seanorg-main.nahz2tk7xm.viam.cloud", // replace with your machine address, api key etc.
 		logger,
 		client.WithDialOptions(rpc.WithEntityCredentials(
-			"<api-key-id>",
+			"53b4986e-1478-4f5a-a515-493ac519d671",
 			rpc.Credentials{
 				Type:    rpc.CredentialsTypeAPIKey,
-				Payload: "<api-key>",
+				Payload: "hhb8ycdvvmichfiwd4n9pegkoba1qrr6",
 			})),
 	)
 	if err != nil {
@@ -28,14 +28,14 @@ func main() {
 
 	defer machine.Close(context.Background())
 
-	dis, err := discovery.FromRobot(machine, "<discovery-name>")
+	dis, err := discovery.FromRobot(machine, "onvif-discovery-1")
 	if err != nil {
 		logger.Fatal(err)
 	}
 
 	extras := map[string]any{}
-	extras["User"] = "<onvif-username>" // optional credentials for if your device is ONVIF authenticated
-	extras["Pass"] = "<onvif-password>" // can also be configured in the discovery service
+	extras["User"] = "admin" // optional credentials for if your device is ONVIF authenticated
+	extras["Pass"] = "checkmate" // can also be configured in the discovery service
 	cfgs, err := dis.DiscoverResources(context.Background(), extras)
 	if err != nil {
 		logger.Fatal(err)
