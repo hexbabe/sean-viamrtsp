@@ -389,12 +389,10 @@ func PrintCapabilitiesSummary(capabilities *PTZCapabilities) {
 func main() {
     ctx := context.Background()
 
-    // Check if the required arguments are provided
     if len(os.Args) < 4 {
         log.Fatalf("Usage: %s <url> <username> <password>", os.Args[0])
     }
 
-    // Parse positional arguments
     url := os.Args[1]
     username := os.Args[2]
     password := os.Args[3]
