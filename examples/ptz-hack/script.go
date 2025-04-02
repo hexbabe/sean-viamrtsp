@@ -44,32 +44,39 @@ func NewPTZCapabilities() *PTZCapabilities {
 // Main discovery function that orchestrates all steps
 func DiscoverCameraPTZCapabilities(ctx context.Context, cameraInfo CameraInfo) (*PTZCapabilities, error) {
 	capabilities := NewPTZCapabilities()
-	dev, err := onvif.NewDevice(onvif.DeviceParams{
+	unauthDev, err := onvif.NewDevice(onvif.DeviceParams{
+		Xaddr: cameraInfo.URL,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create unauthenticated ONVIF device: %w", err)
+	}
+
+	authDev, err := onvif.NewDevice(onvif.DeviceParams{
 		Xaddr:    cameraInfo.URL,
 		Username: cameraInfo.Username,
 		Password: cameraInfo.Password,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to create ONVIF device: %w", err)
+		return nil, fmt.Errorf("failed to create authenticated ONVIF device: %w", err)
 	}
 
-	GetServiceCapabilities(dev, capabilities)
+	GetServiceCapabilities(unauthDev, capabilities)
 
-	GetNodes(dev, capabilities)
+	GetNodes(authDev, capabilities)
 
-	GetNodeDetails(dev, capabilities)
+	GetNodeDetails(authDev, capabilities)
 
-	GetConfigurations(dev, capabilities)
+	GetConfigurations(authDev, capabilities)
 
-	GetConfigurationDetails(dev, capabilities)
+	GetConfigurationDetails(authDev, capabilities)
 
-	GetConfigurationOptions(dev, capabilities)
+	GetConfigurationOptions(authDev, capabilities)
 
-	GetMediaProfiles(dev, capabilities)
+	GetMediaProfiles(unauthDev, capabilities)
 
-	GetCompatibleConfigurations(dev, capabilities)
+	GetCompatibleConfigurations(authDev, capabilities)
 
-	GetPresets(dev, capabilities)
+	GetPresets(authDev, capabilities)
 
 	PrintCapabilitiesSummary(capabilities)
 
@@ -87,7 +94,7 @@ func GetServiceCapabilities(dev *onvif.Device, capabilities *PTZCapabilities) {
 
 	body, _ := io.ReadAll(capabilitiesRes.Body)
 	defer capabilitiesRes.Body.Close()
-	fmt.Printf("PTZ Service Capabilities:\n%s\n\n", string(body))
+	fmt.Printf("PTZ Service Capabilities Response:\n%s\n\n", string(body))
 	
 	// Parse capabilities if needed - example structure, adjust based on actual response
 	var capsResponse struct {
@@ -122,7 +129,7 @@ func GetNodes(dev *onvif.Device, capabilities *PTZCapabilities) {
 
 	body, _ := io.ReadAll(nodesRes.Body)
 	defer nodesRes.Body.Close()
-	fmt.Printf("PTZ Nodes:\n%s\n\n", string(body))
+	fmt.Printf("PTZ Nodes Response:\n%s\n\n", string(body))
 	
 	// Parse nodes from XML
 	var nodesResponse struct {
@@ -158,7 +165,7 @@ func GetNodeDetails(dev *onvif.Device, capabilities *PTZCapabilities) {
 		
 		body, _ := io.ReadAll(nodeRes.Body)
 		defer nodeRes.Body.Close()
-		fmt.Printf("Node %s details:\n%s\n\n", nodeToken, string(body))
+		fmt.Printf("Node %s Details Response:\n%s\n\n", nodeToken, string(body))
 		
 		// Extract auxiliary commands if available
 		var nodeResponse struct {
@@ -189,7 +196,7 @@ func GetConfigurations(dev *onvif.Device, capabilities *PTZCapabilities) {
 
 	body, _ := io.ReadAll(configsRes.Body)
 	defer configsRes.Body.Close()
-	fmt.Printf("PTZ Configurations:\n%s\n\n", string(body))
+	fmt.Printf("PTZ Configurations Response:\n%s\n\n", string(body))
 	
 	// Parse configurations from XML
 	var configsResponse struct {
@@ -225,7 +232,7 @@ func GetConfigurationDetails(dev *onvif.Device, capabilities *PTZCapabilities) {
 		
 		body, _ := io.ReadAll(configRes.Body)
 		defer configRes.Body.Close()
-		fmt.Printf("Configuration %s details:\n%s\n\n", configToken, string(body))
+		fmt.Printf("Configuration %s Details Response:\n%s\n\n", configToken, string(body))
 	}
 }
 
@@ -244,7 +251,7 @@ func GetConfigurationOptions(dev *onvif.Device, capabilities *PTZCapabilities) {
 		
 		body, _ := io.ReadAll(optionsRes.Body)
 		defer optionsRes.Body.Close()
-		fmt.Printf("Configuration %s options:\n%s\n\n", configToken, string(body))
+		fmt.Printf("Configuration %s Options Response:\n%s\n\n", configToken, string(body))
 	}
 }
 
@@ -259,7 +266,7 @@ func GetMediaProfiles(dev *onvif.Device, capabilities *PTZCapabilities) {
 
 	body, _ := io.ReadAll(profilesRes.Body)
 	defer profilesRes.Body.Close()
-	fmt.Printf("Media Profiles:\n%s\n\n", string(body))
+	fmt.Printf("Media Profiles Response:\n%s\n\n", string(body))
 	
 	// Parse profiles from XML
 	var profilesResponse struct {
@@ -301,7 +308,7 @@ func GetCompatibleConfigurations(dev *onvif.Device, capabilities *PTZCapabilitie
 		
 		body, _ := io.ReadAll(compatRes.Body)
 		defer compatRes.Body.Close()
-		fmt.Printf("Compatible configurations for profile %s:\n%s\n\n", profileToken, string(body))
+		fmt.Printf("Compatible Configurations for Profile %s Response:\n%s\n\n", profileToken, string(body))
 		
 		// Parse compatible configurations from XML
 		var compatResponse struct {
@@ -326,7 +333,7 @@ func GetCompatibleConfigurations(dev *onvif.Device, capabilities *PTZCapabilitie
 }
 
 func GetPresets(dev *onvif.Device, capabilities *PTZCapabilities) {
-	fmt.Println("Step 10: Getting presets for each profile...")
+	fmt.Println("Step 9: Getting presets for each profile...")
 	for _, profileToken := range capabilities.Profiles {
 		presetsReq := ptz.GetPresets{
 			ProfileToken: onvifxsd.ReferenceToken(profileToken),
@@ -340,7 +347,7 @@ func GetPresets(dev *onvif.Device, capabilities *PTZCapabilities) {
 		
 		body, _ := io.ReadAll(presetsRes.Body)
 		defer presetsRes.Body.Close()
-		fmt.Printf("Presets for profile %s:\n%s\n\n", profileToken, string(body))
+		fmt.Printf("Presets for Profile %s Response:\n%s\n\n", profileToken, string(body))
 		
 		// Parse presets from XML
 		var presetsResponse struct {
