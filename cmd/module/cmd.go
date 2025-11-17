@@ -9,6 +9,7 @@ import (
 	"github.com/viam-modules/viamrtsp/upnpdiscovery"
 	"github.com/viam-modules/viamrtsp/viamonvif"
 	"github.com/viam-modules/viamrtsp/videostore"
+	"github.com/viam-modules/viamrtsp/webcam"
 	"go.viam.com/rdk/components/camera"
 	"go.viam.com/rdk/components/generic"
 	"go.viam.com/rdk/module"
@@ -36,6 +37,16 @@ func realMain(ctx context.Context) error {
 	}
 
 	err = myMod.AddModelFromRegistry(ctx, generic.API, videostore.Model)
+	if err != nil {
+		return err
+	}
+
+	err = myMod.AddModelFromRegistry(ctx, camera.API, webcam.Model)
+	if err != nil {
+		return err
+	}
+
+	err = myMod.AddModelFromRegistry(ctx, discovery.API, webcam.DiscoveryModel)
 	if err != nil {
 		return err
 	}

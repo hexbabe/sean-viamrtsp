@@ -44,6 +44,7 @@ FFMPEG_VERSION_PLATFORM ?= $(FFMPEG_VERSION)/$(TARGET_OS)-$(TARGET_ARCH)
 FFMPEG_BUILD ?= $(FFMPEG_VERSION_PLATFORM)/build
 FFMPEG_LIBS=    libavformat \
                 libavcodec  \
+                libavdevice \
                 libavutil   \
                 libswscale  \
 
@@ -58,6 +59,7 @@ FFMPEG_OPTS ?= --prefix=$(FFMPEG_BUILD) \
 --enable-decoder=h264 \
 --enable-decoder=hevc \
 --enable-decoder=mjpeg \
+--enable-decoder=rawvideo \
 --enable-demuxer=concat \
 --enable-demuxer=mov \
 --enable-demuxer=mp4 \
@@ -75,6 +77,8 @@ FFMPEG_OPTS ?= --prefix=$(FFMPEG_BUILD) \
 --enable-protocol=concat \
 --enable-protocol=crypto \
 --enable-protocol=file \
+--enable-indev=avfoundation \
+--enable-indev=v4l2 \
 
 # Add linker flag -checklinkname=0 for anet https://github.com/wlynxg/anet?tab=readme-ov-file#how-to-build-with-go-1230-or-later.
 PKG_CONFIG_PATH = $(FFMPEG_BUILD)/lib/pkgconfig
